@@ -12,7 +12,7 @@ Built for a take-home assignment with a 4–8 hour time budget. Demonstrates:
 - A confidence score derived from actual execution signals, not LLM self-report
 - Deliberate testing against unseen/impossible queries to confirm graceful failure instead of hallucination
 
-**Live demo:** [add your Render URL here]
+**Live demo:** https://intelligent-analytics-query-engine.onrender.com/
 
 ---
 
