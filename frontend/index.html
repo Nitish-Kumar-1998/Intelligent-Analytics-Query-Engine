@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intelligent Analytics Query Engine</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Intelligent Analytics Query Engine</h1>
+    <p class="subtitle">Ask a question about the sales data in plain English.</p>
+
+    <div class="query-box">
+      <input
+        type="text"
+        id="queryInput"
+        placeholder="e.g. Top 2 cities by profit"
+      />
+      <button id="submitBtn">Ask</button>
+    </div>
+
+    <div class="examples">
+      Try:
+      <span class="example-chip" data-query="Total sales in India for March">Total sales in India for March</span>
+      <span class="example-chip" data-query="Top 2 cities by profit">Top 2 cities by profit</span>
+      <span class="example-chip" data-query="Which region missed its target in Feb?">Which region missed its target in Feb?</span>
+    </div>
+
+    <div id="loading" class="loading hidden">Thinking...</div>
+
+    <div id="resultCard" class="result-card hidden">
+      <div class="result-header">
+        <h2 id="resultQuery"></h2>
+        <div class="confidence-wrap">
+          <span class="confidence-label">Confidence</span>
+          <div class="confidence-bar-bg">
+            <div id="confidenceBar" class="confidence-bar-fill"></div>
+          </div>
+          <span id="confidenceValue" class="confidence-value"></span>
+        </div>
+      </div>
+
+      <div class="result-section">
+        <h3>Result</h3>
+        <pre id="resultValue"></pre>
+      </div>
+
+      <div class="result-section">
+        <h3>Generated SQL</h3>
+        <pre id="resultSql"></pre>
+      </div>
+
+      <div class="result-section">
+        <h3>Explanation</h3>
+        <p id="resultExplanation"></p>
+      </div>
+    </div>
+
+    <div id="errorMsg" class="error-msg hidden"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
