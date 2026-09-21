@@ -23,8 +23,12 @@ OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "outputs", "results.json")
 
 def main():
     from src.pipeline import answer_query
+    import sys
 
-    with open(os.path.join(DATASET_DIR, "nl_queries.json"), "r") as f:
+    filename = sys.argv[1] if len(sys.argv) > 1 else "nl_queries.json"
+    output_name = "results.json" if filename == "nl_queries.json" else f"{filename.replace('.json', '')}_results.json"
+
+    with open(os.path.join(DATASET_DIR, filename), "r") as f:
         queries = json.load(f)
 
     con = get_connection()
@@ -38,12 +42,12 @@ def main():
         print(json.dumps(answer, indent=2, default=str))
         print("-" * 60)
 
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-    with open(OUTPUT_PATH, "w") as f:
+    output_path = os.path.join(os.path.dirname(__file__), "outputs", output_name)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w") as f:
         json.dump(results, f, indent=2, default=str)
 
-    print(f"\nDone. Results written to {OUTPUT_PATH}")
-
+    print(f"\nDone. Results written to {output_path}")
 
 if __name__ == "__main__":
     main()

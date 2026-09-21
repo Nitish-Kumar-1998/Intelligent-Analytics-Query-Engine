@@ -51,7 +51,7 @@ def _call_once(system_prompt: str, user_prompt: str, max_tokens: int) -> str:
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt,
                 max_output_tokens=max_tokens,
-                temperature=0.2,
+                temperature=0.0,
             ),
         )
         return response.text.strip()
@@ -60,7 +60,7 @@ def _call_once(system_prompt: str, user_prompt: str, max_tokens: int) -> str:
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             max_tokens=max_tokens,
-            temperature=0.2,
+            temperature=0.0,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},

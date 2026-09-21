@@ -62,10 +62,26 @@ def answer_query(con, question: str) -> dict:
     confidence = score_confidence(plan, executed_without_retry and success, result)
 
     # Step 5: explanation (reuses the plan's "understanding" + the SQL)
+        # Step 5: explanation (reuses the plan's "understanding" + the SQL)
     if success:
+        null_note = ""
+        if isinstance(result, list):
+            has_nulls = any(
+                isinstance(row, dict) and any(v is None for v in row.values())
+                for row in result
+            )
+            if has_nulls:
+                null_note = (
+                    " Note: the result contains missing values because the dataset "
+                    "doesn't have enough historical data to fully answer this "
+                    "(e.g. a prior period needed for comparison isn't present). "
+                    "Confidence was lowered accordingly."
+                )
+
         explanation = (
             f"Understood as: {plan.get('understanding', 'N/A')}. "
             f"Generated and ran SQL against the sales/targets tables to compute this."
+            f"{null_note}"
         )
     else:
         explanation = (

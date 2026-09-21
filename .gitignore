@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 .env
 outputs/results.json
+outputs/edge_case_queries_results.json
+.git/
