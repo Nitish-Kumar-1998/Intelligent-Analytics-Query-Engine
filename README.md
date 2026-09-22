@@ -5,14 +5,14 @@ questions into executable SQL, runs them against a real dataset, and
 returns results with a calibrated confidence score and a plain-English
 explanation of what was understood and how the answer was computed.
 
-Built for a take-home assignment with a 4–8 hour time budget. Demonstrates:
+Demonstrates:
 - Two-stage LLM reasoning (plan → generate SQL) instead of one-shot generation
 - Schema-grounded prompting to resolve business terms into real formulas
 - Self-correcting execution (one retry on SQL errors)
 - A confidence score derived from actual execution signals, not LLM self-report
 - Deliberate testing against unseen/impossible queries to confirm graceful failure instead of hallucination
 
-**Live demo:** https://intelligent-analytics-query-engine.onrender.com/
+**Live demo:** https://intelligent-analytics-query-engine.onrender.com
 
 ---
 
@@ -85,7 +85,7 @@ Intelligent-Analytics-Query-Engine/
 │   ├── sales_data.csv
 │   ├── targets.csv
 │   ├── data_dictionary.json
-│   ├── nl_queries.json              # the 8 required test queries
+│   ├── nl_queries.json              # core test queries
 │   └── edge_case_queries.json       # self-authored unseen-query tests
 ├── src/
 │   ├── data_loader.py               # loads CSVs into DuckDB
