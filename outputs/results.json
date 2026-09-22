@@ -1,0 +1,184 @@
+[
+  {
+    "query": "Total sales in India for March",
+    "generated_logic": "SELECT sum(quantity * unit_price * (1 - discount)) AS revenue\nFROM sales\nWHERE country = 'India' AND strftime(order_date, '%m') = '03'",
+    "result": 108.0,
+    "confidence_score": 1.0,
+    "explanation": "Understood as: The user is asking for the total sales (revenue) in India for the month of March.. Generated and ran SQL against the sales/targets tables to compute this."
+  },
+  {
+    "query": "Top 2 cities by profit",
+    "generated_logic": "SELECT city, sum(profit) AS profit\nFROM sales\nGROUP BY city\nORDER BY profit DESC\nLIMIT 2",
+    "result": [
+      {
+        "city": "New York",
+        "profit": 200
+      },
+      {
+        "city": "San Francisco",
+        "profit": 180
+      }
+    ],
+    "confidence_score": 1.0,
+    "explanation": "Understood as: The user wants to find the top 2 cities ranked by their total profit.. Generated and ran SQL against the sales/targets tables to compute this."
+  },
+  {
+    "query": "Average order value by region",
+    "generated_logic": "SELECT region, sum(quantity * unit_price * (1 - discount)) / count(order_id) AS avg_order_value FROM sales GROUP BY region",
+    "result": [
+      {
+        "region": "APAC",
+        "avg_order_value": 118.5
+      },
+      {
+        "region": "NA",
+        "avg_order_value": 1087.4666666666667
+      },
+      {
+        "region": "EMEA",
+        "avg_order_value": 799.3333333333334
+      }
+    ],
+    "confidence_score": 1.0,
+    "explanation": "Understood as: The user is asking for the average order value grouped by region.. Generated and ran SQL against the sales/targets tables to compute this."
+  },
+  {
+    "query": "Which region missed its target in Feb?",
+    "generated_logic": "SELECT \n    s.region,\n    sum(s.quantity * s.unit_price * (1 - s.discount)) as revenue,\n    max(t.target_revenue) as target_revenue,\n    sum(s.quantity * s.unit_price * (1 - s.discount)) - max(t.target_revenue) as variance\nFROM sales s\nJOIN targets t ON s.region = t.region AND strftime(s.order_date, '%Y-%m') = t.month\nWHERE strftime(s.order_date, '%m') = '02'\nGROUP BY s.region\nHAVING sum(s.quantity * s.unit_price * (1 - s.discount)) < max(t.target_revenue)",
+    "result": [
+      {
+        "region": "APAC",
+        "revenue": 75.0,
+        "target_revenue": 6000,
+        "variance": -5925.0
+      },
+      {
+        "region": "NA",
+        "revenue": 1116.0,
+        "target_revenue": 9500,
+        "variance": -8384.0
+      },
+      {
+        "region": "EMEA",
+        "revenue": 255.0,
+        "target_revenue": 7500,
+        "variance": -7245.0
+      }
+    ],
+    "confidence_score": 1.0,
+    "explanation": "Understood as: The user wants to identify which region failed to achieve its revenue target in the month of February.. Generated and ran SQL against the sales/targets tables to compute this."
+  },
+  {
+    "query": "Sales contribution % by category",
+    "generated_logic": "SELECT \n    product_category,\n    SUM(quantity * unit_price * (1 - discount)) AS revenue,\n    SUM(quantity * unit_price * (1 - discount)) * 100.0 / SUM(SUM(quantity * unit_price * (1 - discount))) OVER () AS revenue_contribution_pct\nFROM sales\nGROUP BY product_category\nORDER BY revenue DESC;",
+    "result": [
+      {
+        "product_category": "Technology",
+        "revenue": 5402.0,
+        "revenue_contribution_pct": 88.06077203964529
+      },
+      {
+        "product_category": "Furniture",
+        "revenue": 579.0,
+        "revenue_contribution_pct": 9.438575899843507
+      },
+      {
+        "product_category": "Office Supplies",
+        "revenue": 153.4,
+        "revenue_contribution_pct": 2.5006520605112157
+      }
+    ],
+    "confidence_score": 1.0,
+    "explanation": "Understood as: The user wants to find the percentage contribution of each product category to the total revenue.. Generated and ran SQL against the sales/targets tables to compute this."
+  },
+  {
+    "query": "Top product in each region",
+    "generated_logic": "WITH ranked_products AS (\n  SELECT\n    region,\n    product_name,\n    SUM(quantity * unit_price * (1 - discount)) AS revenue,\n    ROW_NUMBER() OVER (PARTITION BY region ORDER BY SUM(quantity * unit_price * (1 - discount)) DESC) as rn\n  FROM sales\n  GROUP BY region, product_name\n)\nSELECT\n  region,\n  product_name,\n  revenue\nFROM ranked_products\nWHERE rn <= 1",
+    "result": [
+      {
+        "region": "NA",
+        "product_name": "Dell XPS",
+        "revenue": 2068.0
+      },
+      {
+        "region": "APAC",
+        "product_name": "Ergo Chair",
+        "revenue": 324.0
+      },
+      {
+        "region": "EMEA",
+        "product_name": "Samsung Galaxy",
+        "revenue": 1288.0
+      }
+    ],
+    "confidence_score": 1.0,
+    "explanation": "Understood as: The user wants to find the top product by revenue in each region.. Generated and ran SQL against the sales/targets tables to compute this."
+  },
+  {
+    "query": "YoY growth in revenue",
+    "generated_logic": "WITH yearly_revenue AS (\n  SELECT \n    EXTRACT(YEAR FROM order_date) AS yr,\n    SUM(quantity * unit_price * (1 - discount)) AS revenue\n  FROM sales\n  GROUP BY 1\n)\nSELECT \n  curr.yr AS current_year,\n  curr.revenue AS current_revenue,\n  prev.revenue AS prior_year_revenue,\n  (curr.revenue - prev.revenue) / NULLIF(prev.revenue, 0) * 100 AS yoy_growth_percentage\nFROM yearly_revenue curr\nLEFT JOIN yearly_revenue prev ON curr.yr = prev.yr + 1\nORDER BY curr.yr DESC",
+    "result": [
+      {
+        "current_year": 2024,
+        "current_revenue": 6134.4,
+        "prior_year_revenue": null,
+        "yoy_growth_percentage": null
+      }
+    ],
+    "confidence_score": 0.7,
+    "explanation": "Understood as: The user is asking for the year-over-year (YoY) growth rate of revenue.. Generated and ran SQL against the sales/targets tables to compute this. Note: the result contains missing values because the dataset doesn't have enough historical data to fully answer this (e.g. a prior period needed for comparison isn't present). Confidence was lowered accordingly."
+  },
+  {
+    "query": "Revenue of top 3 customers per region",
+    "generated_logic": "WITH ranked_customers AS (\n    SELECT \n        region,\n        customer_id,\n        SUM(quantity * unit_price * (1 - discount)) AS revenue,\n        ROW_NUMBER() OVER (PARTITION BY region ORDER BY SUM(quantity * unit_price * (1 - discount)) DESC) as rnk\n    FROM sales\n    GROUP BY region, customer_id\n)\nSELECT \n    region,\n    customer_id,\n    revenue\nFROM ranked_customers\nWHERE rnk <= 3\nORDER BY region, rnk;",
+    "result": [
+      {
+        "region": "APAC",
+        "customer_id": "C001",
+        "revenue": 324.0
+      },
+      {
+        "region": "APAC",
+        "customer_id": "C003",
+        "revenue": 75.0
+      },
+      {
+        "region": "APAC",
+        "customer_id": "C006",
+        "revenue": 75.0
+      },
+      {
+        "region": "EMEA",
+        "customer_id": "C008",
+        "revenue": 1288.0
+      },
+      {
+        "region": "EMEA",
+        "customer_id": "C002",
+        "revenue": 855.0
+      },
+      {
+        "region": "EMEA",
+        "customer_id": "C005",
+        "revenue": 255.0
+      },
+      {
+        "region": "NA",
+        "customer_id": "C009",
+        "revenue": 2068.0
+      },
+      {
+        "region": "NA",
+        "customer_id": "C004",
+        "revenue": 1116.0
+      },
+      {
+        "region": "NA",
+        "customer_id": "C007",
+        "revenue": 78.4
+      }
+    ],
+    "confidence_score": 1.0,
+    "explanation": "Understood as: The user wants to find the top 3 customers by revenue for each region.. Generated and ran SQL against the sales/targets tables to compute this."
+  }
+]

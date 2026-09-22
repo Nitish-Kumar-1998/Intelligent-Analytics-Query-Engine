@@ -1,0 +1,23 @@
+[
+  {
+    "query": "What was profit in 2022?",
+    "generated_logic": "SELECT sum(profit) AS profit FROM sales WHERE strftime(order_date, '%Y') = '2022'",
+    "result": null,
+    "confidence_score": 0.7,
+    "explanation": "Understood as: The user is asking for the total profit in the year 2022, though the dataset may not contain data for that year.. Generated and ran SQL against the sales/targets tables to compute this."
+  },
+  {
+    "query": "Show me revenue by planet",
+    "generated_logic": "SELECT 'Planet dimension not available' AS error, sum(quantity * unit_price * (1 - discount)) AS revenue FROM sales LIMIT 0",
+    "result": [],
+    "confidence_score": 0.7,
+    "explanation": "Understood as: The user is asking for revenue grouped by planet, but 'planet' is not a valid dimension in the available schema.. Generated and ran SQL against the sales/targets tables to compute this."
+  },
+  {
+    "query": "Compare Mars region to Venus region",
+    "generated_logic": "SELECT region, sum(quantity * unit_price * (1 - discount)) AS revenue FROM sales WHERE region in ('Mars', 'Venus') GROUP BY region",
+    "result": [],
+    "confidence_score": 0.7,
+    "explanation": "Understood as: The user is asking to compare the revenue of Mars region and Venus region, though these regions do not exist in the available schema data.. Generated and ran SQL against the sales/targets tables to compute this."
+  }
+]
